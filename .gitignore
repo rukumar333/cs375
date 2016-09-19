@@ -1,0 +1,6 @@
+lectures/
+*.o
+*.exe
+*.doc
+*.tar.gz
+*.zip

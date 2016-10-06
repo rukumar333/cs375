@@ -5,20 +5,24 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <chrono>
 
 class Point{
 public:
     int x;
     int y;
-    Point(int x, int y){
+    Point(int x, int y, int index){
 	this->x = x;
-	this->y = y;	
+	this->y = y;
+	this->index = index;
     };
     Point& operator=(const Point& other){
 	x = other.x;
 	y = other.y;
+	index = other.index;
 	return *this;
     }
+    int index = -1;
     
 };
 std::ostream& operator<<(std::ostream &os, const Point &point){
@@ -27,16 +31,19 @@ std::ostream& operator<<(std::ostream &os, const Point &point){
 }
 
 double getDistance(Point p1, Point p2);
-std::pair<int, int> getShortestDistance(const std::vector<Point> &points);
+std::pair<int, int> getShortestDistance(std::vector<Point> points);
 std::pair<int, int> getShortestRec(const std::vector<Point> &points, int start, int end, std::vector<int> &mergedPointsIndices);
 void mergeYSorted(const std::vector<Point> &points, std::vector<int> &mergedPointsIndices, std::vector<int> &leftMergedIndices, std::vector<int> &rightMergedIndices);
 std::pair<int, int> getMiddlePair(const std::vector<Point> &points, std::vector<int> mergedPointsIndices, double minDistance, int middleY);
+std::pair<int, int> getShortestDistanceIter(const std::vector<Point> &points);
 
 
 int main(int argc, char * argv[]){
-    if(argc < 2){
+    if(argc < 3){
 	std::cout << "Need more arguments" << std::endl;
+	return 0;
     }
+    //Parsing input
     std::ifstream file(argv[1]);
     std::string str;
     std::vector<Point> points = std::vector<Point>();
@@ -49,26 +56,44 @@ int main(int argc, char * argv[]){
 	x = std::stoi(coord);
 	std::getline(ss, coord, ' ');
 	y = std::stoi(coord);
-	points.push_back(Point(x, y));
+	points.push_back(Point(x, y, points.size()));
     }
-    std::sort(points.begin(), points.end(), [](Point p1, Point p2){
-	    return p1.x < p2.x;
-	});
-    for(int i = 0; i < points.size(); ++ i){
-	std::cout << points[i] << " ";
-    }
-    std::cout << std::endl;    
+    //Getting shortest distance
+    //Code to test time difference in DC and Brute Force
+    // std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    // std::pair<int, int> indexPair = getShortestDistance(points);
+    // std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    // auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    // std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
+    // std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+    // std::pair<int, int> indexPairIter = getShortestDistanceIter(points);
+    // std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+    // auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
+    // std::cout << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
+    // std::cout << "Recursive DC: " << duration1 << std::endl;
+    // std::cout << "Iteration: " << duration2 << std::endl;
+    std::ofstream outputFile(argv[2]);
     std::pair<int, int> indexPair = getShortestDistance(points);
-    std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
+    outputFile << indexPair.first << " " << indexPair.second << " ";
+    outputFile << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    return 0;
 }
 
 double getDistance(Point p1, Point p2){
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
-std::pair<int, int> getShortestDistance(const std::vector<Point> &points){
+std::pair<int, int> getShortestDistance(std::vector<Point> points){
+    if(points.size() < 2){
+	return std::make_pair(-1, -1);
+    }
+    //Sort points from left to right based on x
+    std::sort(points.begin(), points.end(), [](Point p1, Point p2){
+	    return p1.x < p2.x;
+	});
     std::vector<int> temp = std::vector<int>();
-    return getShortestRec(points, 0, points.size(), temp);
+    std::pair<int, int> indexPair = getShortestRec(points, 0, points.size(), temp);
+    return std::make_pair(points[indexPair.first].index, points[indexPair.second].index);
 }
 
 std::pair<int, int> getShortestRec(const std::vector<Point> &points, int start, int end, std::vector<int> &mergedPointsIndices){
@@ -150,7 +175,7 @@ void mergeYSorted(const std::vector<Point> &points, std::vector<int> &mergedPoin
 std::pair<int, int> getMiddlePair(const std::vector<Point> &points, std::vector<int> mergedPointsIndices, double minDistance, int middleY){
     std::pair<int, int> result = std::make_pair(-1, -1);
     double middleMinDistance = minDistance;
-    auto it = mergedPointsIndices.begin();
+    std::vector<int>::iterator it = mergedPointsIndices.begin();
     while(it != mergedPointsIndices.end()){
 	if(points[*it].x < middleY + minDistance && points[*it].x > middleY - minDistance){
 	    ++ it;
@@ -171,4 +196,20 @@ std::pair<int, int> getMiddlePair(const std::vector<Point> &points, std::vector<
 	}
     }
     return result;
+}
+
+std::pair<int, int> getShortestDistanceIter(const std::vector<Point> &points){
+    double minDistance = -1;
+    std::pair<int, int> minPair = std::make_pair(-1, -1);
+    for(int i = 0; i < points.size() - 1; ++ i){
+	for(int j = i + 1; j < points.size(); ++ j){
+	    double distance = getDistance(points[i], points[j]);
+	    if(minDistance > distance || minDistance == -1){
+		minDistance = distance;
+		minPair.first = i;
+		minPair.second = j;
+	    }
+	}
+    }
+    return minPair;
 }

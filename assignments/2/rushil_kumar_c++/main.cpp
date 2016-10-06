@@ -9,16 +9,22 @@
 
 class Point{
 public:
-    int x;
-    int y;
-    Point(int x, int y, int index){
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int numCoordinates = 0;
+    Point(int x, int y, int z, int numCoordinates, int index){
 	this->x = x;
 	this->y = y;
+	this->z = z;
+	this->numCoordinates = numCoordinates;
 	this->index = index;
     };
     Point& operator=(const Point& other){
 	x = other.x;
 	y = other.y;
+	z = other.z;
+	numCoordinates = other.numCoordinates;
 	index = other.index;
 	return *this;
     }
@@ -26,7 +32,7 @@ public:
     
 };
 std::ostream& operator<<(std::ostream &os, const Point &point){
-    os << "(" << point.x << "," << point.y << ")";
+    os << "(" << point.x << "," << point.y << "," << point.z << ")";
     return os;
 }
 
@@ -48,15 +54,28 @@ int main(int argc, char * argv[]){
     std::string str;
     std::vector<Point> points = std::vector<Point>();
     while(std::getline(file, str)){
-	int x, y;
+	int x = 0;
+	int y = 0;
+	int z = 0;
+	int i = 0;
 	std::string coord;
 	std::stringstream ss;
 	ss.str(str);
-	std::getline(ss, coord, ' ');
-	x = std::stoi(coord);
-	std::getline(ss, coord, ' ');
-	y = std::stoi(coord);
-	points.push_back(Point(x, y, points.size()));
+	while(std::getline(ss, coord, ' ')){
+	    switch(i){
+	    case 0:
+		x = std::stoi(coord);
+		break;
+	    case 1:
+		y = std::stoi(coord);
+		break;
+	    case 2:
+		z = std::stoi(coord);
+		break;
+	    }
+	    ++ i;
+	}
+	points.push_back(Point(x, y, z, i, points.size()));
     }
     //Getting shortest distance
     //Code to test time difference in DC and Brute Force
@@ -74,13 +93,18 @@ int main(int argc, char * argv[]){
     // std::cout << "Iteration: " << duration2 << std::endl;
     std::ofstream outputFile(argv[2]);
     std::pair<int, int> indexPair = getShortestDistance(points);
+    std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
+    std::cout << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    std::pair<int, int> indexPairIter = getShortestDistanceIter(points);
+    std::cout << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
+    std::cout << getDistance(points[indexPairIter.first], points[indexPairIter.second]) << std::endl;
     outputFile << indexPair.first << " " << indexPair.second << " ";
     outputFile << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
     return 0;
 }
 
 double getDistance(Point p1, Point p2){
-    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2) + pow(p1.z - p2.z, 2));
 }
 
 std::pair<int, int> getShortestDistance(std::vector<Point> points){
@@ -152,7 +176,7 @@ std::pair<int, int> getShortestRec(const std::vector<Point> &points, int start, 
 
 void mergeYSorted(const std::vector<Point> &points, std::vector<int> &mergedPointsIndices, std::vector<int> &leftMergedIndices, std::vector<int> &rightMergedIndices){
     int i = 0;
-    int j = 0;
+    int j = 0;    
     while(i < leftMergedIndices.size() && j < rightMergedIndices.size()){
 	if(points[leftMergedIndices[i]].y < points[rightMergedIndices[j]].y){
 	    mergedPointsIndices.push_back(leftMergedIndices[i]);
@@ -182,6 +206,21 @@ std::pair<int, int> getMiddlePair(const std::vector<Point> &points, std::vector<
 	}else{
 	    it = mergedPointsIndices.erase(it);
 	}
+    }
+    if(points[0].numCoordinates == 3){
+	std::vector<Point> twoDPoints = std::vector<Point>();
+	std::cout << "Here" << std::endl;
+	for(int i = 0; i < mergedPointsIndices.size(); ++ i){
+	    Point point = Point(points[mergedPointsIndices[i]].y,
+				points[mergedPointsIndices[i]].z,
+				points[mergedPointsIndices[i]].x,
+				2,
+				points[mergedPointsIndices[i]].index);
+	    twoDPoints.push_back(point);
+	}
+	std::cout << "Here now" << std::endl;
+	std::pair<int, int> result = getShortestDistance(twoDPoints);
+	return result;
     }
     if(mergedPointsIndices.size() > 0){
 	for(int i = 0; i < mergedPointsIndices.size() - 1; ++ i){

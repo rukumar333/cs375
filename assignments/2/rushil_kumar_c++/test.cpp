@@ -8,12 +8,20 @@ void first();
 void second();
 void third();
 void fourth();
+void fifth();
+void sixth();
+
+int LENGTH;
 
 int main(int argc, char *argv[]){    
     // first();
     // second();
     // third();
-    fourth();
+    // fourth();
+    // fifth();
+    std::string count(argv[1]);
+    LENGTH = std::stoi(count);
+    sixth();
 }
 
 void first(){
@@ -50,5 +58,21 @@ void fourth(){
     srand(time(NULL));
     for(int i = 0; i < length; ++ i){
 	std::cout << rand() % 20000 - 10000 << " " << rand() % 20000 - 10000 << " " << rand() % 20000 - 10000 << std::endl;
+    }
+}
+
+void fifth(){
+    int length = LENGTH;
+    srand(time(NULL));
+    for(int i = 0; i < length; ++ i){
+	std::cout << rand() % 20000 - 10000 << " " << rand() % 20000 - 10000 << std::endl;
+    }
+}
+
+void sixth(){
+    int length = LENGTH;
+    srand(time(NULL));
+    for(int i = 0; i < length; ++ i){
+	std::cout << rand() % 20000 - 10000 << " " << rand() % 20000 - 10000 << std::endl;
     }
 }

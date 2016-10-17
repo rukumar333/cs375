@@ -45,10 +45,10 @@ std::pair<int, int> getShortestDistanceIter(const std::vector<Point> &points);
 
 
 int main(int argc, char * argv[]){
-    if(argc < 3){
-	std::cout << "Need more arguments" << std::endl;
-	return 0;
-    }
+    // if(argc < 3){
+    // 	std::cout << "Need more arguments" << std::endl;
+    // 	return 0;
+    // }
     //Parsing input
     std::ifstream file(argv[1]);
     std::string str;
@@ -79,27 +79,29 @@ int main(int argc, char * argv[]){
     }
     //Getting shortest distance
     //Code to test time difference in DC and Brute Force
-    // std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    // std::pair<int, int> indexPair = getShortestDistance(points);
-    // std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    // auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-    // std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
-    // std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
-    // std::pair<int, int> indexPairIter = getShortestDistanceIter(points);
-    // std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
-    // auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
-    // std::cout << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
-    // std::cout << "Recursive DC: " << duration1 << std::endl;
-    // std::cout << "Iteration: " << duration2 << std::endl;
-    std::ofstream outputFile(argv[2]);
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     std::pair<int, int> indexPair = getShortestDistance(points);
-    std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
-    std::cout << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    std::cout << "DC " << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
+    std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
     std::pair<int, int> indexPairIter = getShortestDistanceIter(points);
-    std::cout << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
-    std::cout << getDistance(points[indexPairIter.first], points[indexPairIter.second]) << std::endl;
-    outputFile << indexPair.first << " " << indexPair.second << " ";
-    outputFile << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+    auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
+    std::cout << "Brute " << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
+    std::cout << "DC " << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    std::cout << "Brute " << getDistance(points[indexPairIter.first], points[indexPairIter.second]) << std::endl;
+    std::cout << "Recursive DC: " << duration1 << std::endl;
+    std::cout << "Brute: " << duration2 << std::endl;
+    // std::ofstream outputFile(argv[2]);
+    // std::pair<int, int> indexPair = getShortestDistance(points);
+    // std::cout << points[indexPair.first] << " " << points[indexPair.second] << std::endl;
+    // std::cout << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
+    // std::pair<int, int> indexPairIter = getShortestDistanceIter(points);
+    // std::cout << points[indexPairIter.first] << " " << points[indexPairIter.second] << std::endl;
+    // std::cout << getDistance(points[indexPairIter.first], points[indexPairIter.second]) << std::endl;
+    // outputFile << indexPair.first << " " << indexPair.second << " ";
+    // outputFile << getDistance(points[indexPair.first], points[indexPair.second]) << std::endl;
     return 0;
 }
 
@@ -207,24 +209,11 @@ std::pair<int, int> getMiddlePair(const std::vector<Point> &points, std::vector<
 	    it = mergedPointsIndices.erase(it);
 	}
     }
-    if(points[0].numCoordinates == 3){
-	std::vector<Point> twoDPoints = std::vector<Point>();
-	std::cout << "Here" << std::endl;
-	for(int i = 0; i < mergedPointsIndices.size(); ++ i){
-	    Point point = Point(points[mergedPointsIndices[i]].y,
-				points[mergedPointsIndices[i]].z,
-				points[mergedPointsIndices[i]].x,
-				2,
-				points[mergedPointsIndices[i]].index);
-	    twoDPoints.push_back(point);
-	}
-	std::cout << "Here now" << std::endl;
-	std::pair<int, int> result = getShortestDistance(twoDPoints);
-	return result;
-    }
     if(mergedPointsIndices.size() > 0){
 	for(int i = 0; i < mergedPointsIndices.size() - 1; ++ i){
-	    for(int j = i + 1; j < mergedPointsIndices.size() && points[mergedPointsIndices[j]].y - points[mergedPointsIndices[i]].y < minDistance; ++ j){
+	    for(int j = i + 1; j < mergedPointsIndices.size() && 
+		    points[mergedPointsIndices[j]].y - points[mergedPointsIndices[i]].y < minDistance;
+		++ j){
 		double distance = getDistance(points[mergedPointsIndices[i]], points[mergedPointsIndices[j]]);
 		if(middleMinDistance > distance){
 		    middleMinDistance = distance;

@@ -3,17 +3,18 @@
 
 #include <vector>
 #include <string>
-#include <set>
+#include <algorithm>
+#include <limits>
 
 class Graph{
 public:
-    std::vector<std::vector<int> > weights;
-    std::set<std::string> cities;
-    void insertCity(std::string city);
-    void insertWeights(std::string city, std::vector<int> weights);
-    void insertWeight(std::string cityA, std::string cityB, int weight);
     Graph();
     Graph(int numCities);
+    std::vector<std::vector<int> > weights;
+    std::vector<std::string> cities;
+    void insertCity(std::string city);
+    void insertWeight(std::string cityA, std::string cityB, int weight);
+    std::vector<std::vector <int> > floydsAlgorithm(); 
 };
 
 #endif

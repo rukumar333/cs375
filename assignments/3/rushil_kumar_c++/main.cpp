@@ -15,7 +15,9 @@ int main(){
     graph.insertCity("Scranton");
     graph.insertCity("Binghamton");
     graph.insertCity("Syracuse");
-    
+    //Sort cities    
+    std::sort(graph.cities.begin(), graph.cities.end());
+
     graph.insertWeight("Toronto", "Kingston", 180);
     graph.insertWeight("Toronto", "Buffalo", 100);
     graph.insertWeight("Buffalo", "Rochester", 60);
@@ -31,19 +33,19 @@ int main(){
     graph.insertWeight("Scranton", "New York City", 100);
     graph.insertWeight("Scranton", "Allentown", 65);
     graph.insertWeight("Allentown", "New York City", 70);
-    auto it = graph.cities.begin();
-    while(it != graph.cities.end()){
-    	std::cout << *it << " ";
-    	++ it;
-    }
-    for(int i = 0; i < graph.weights.size(); ++ i){
-    	std::cout << graph.
-cities[i] << " {";
-    	for(int j = 0; j < graph.weights[i].size(); ++ j){
-    	    std::cout << graph.weights[i][j] << " ";
-    	}
-    	std::cout << "}" << std::endl;
+    // auto it = graph.cities.begin();
+    // while(it != graph.cities.end()){
+    // 	std::cout << *it << " ";
+    // 	++ it;
+    // }
+    // std::cout << std::endl;
+    // for(int i = 0; i < graph.weights.size(); ++ i){
+    // 	std::cout << graph.cities[i] << " {";
+    // 	for(int j = 0; j < graph.weights[i].size(); ++ j){
+    // 	    std::cout << graph.weights[i][j] << " (" << graph.cities[j] << ") ";
+    // 	}
+    // 	std::cout << "}" << std::endl;
 	
-    }
+    // }
     return 0;
 }

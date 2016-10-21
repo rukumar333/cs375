@@ -2,7 +2,21 @@
 #include <iostream>
 #include <string>
 
+std::vector<std::vector<std::vector<int> > > lengthLCS(std::string str1, std::string str2, std::string str3);
+std::string LCS(std::string str1, std::string str2, std::string str3);
+
 int main(){
+    std::string str1 = "6541254939322816220209974565477289648317";
+    std::string str2 = "3142522751761601737419090933147067701840";
+    std::string str3 = "28070305612903542595135701601 62463275171";
+    std::cout << "LCS of strings str1, str2, str3" << std::endl;
+    std::cout << "str1: " << str1 << std::endl;
+    std::cout << "str2: " << str2 << std::endl;
+    std::cout << "str3: " << str3 << std::endl;
+    std::string result = LCS(str1, str2, str3);
+    std::cout << "Length LCS: " << result.size() << std::endl;
+    std::cout << "LCS: " << result << std::endl;
+    std::cout << std::endl;
     Graph graph(11);
     graph.insertCity("Toronto");
     graph.insertCity("Buffalo");
@@ -33,6 +47,26 @@ int main(){
     graph.insertWeight("Scranton", "New York City", 100);
     graph.insertWeight("Scranton", "Allentown", 65);
     graph.insertWeight("Allentown", "New York City", 70);
+    std::cout << "Shortest path from New York City to Toronto" << std::endl;
+    graph.printShortestPath("New York City", "Toronto");
+    return 0;
+    // std::vector<std::vector<int > > distances = graph.floydsAlgorithm();
+    // auto it = graph.cities.begin();
+    // while(it != graph.cities.end()){
+    // 	std::cout << *it << " ";
+    // 	++ it;
+    // }
+    // std::cout << std::endl;
+    // for(int i = 0; i < distances.size(); ++ i){
+    // 	// std::cout << graph.cities[i] << " {";
+    // 	for(int j = 0; j < distances[i].size(); ++ j){
+    // 	    // std::cout << distances[i][j] << " (" << graph.cities[j] << ") ";
+    // 	    std::cout << distances[i][j] << " ";
+    // 	}
+    // 	// std::cout << "}" << std::endl;
+    // 	std::cout << std::endl;
+	
+    // }
     // auto it = graph.cities.begin();
     // while(it != graph.cities.end()){
     // 	std::cout << *it << " ";
@@ -48,4 +82,55 @@ int main(){
 	
     // }
     return 0;
+}
+
+std::vector<std::vector<std::vector<int> > > lengthLCS(std::string str1, std::string str2, std::string str3){
+    std::vector<std::vector<std::vector<int> > > table(str1.size() + 1, std::vector<std::vector<int> >(str2.size() + 1, std::vector<int>(str3.size() + 1, 0)));
+    for(int i = 1; i < table.size(); ++ i){
+	for(int j = 1; j < table[i].size(); ++ j){
+	    for(int k = 1; k < table[i][j].size(); ++ k){
+		if(str1[i - 1] == str2[j - 1] && str2[j - 1] == str3[k - 1]){
+		    table[i][j][k] = table[i - 1][j - 1][k - 1] + 1;
+		}else{
+		    int length1 = table[i - 1][j][k];
+		    int length2 = table[i][j - 1][k];
+		    int length3 = table[i][j][k - 1];
+		    table[i][j][k] = std::max({length1, length2, length3});
+		}
+	    }
+	}
+    }
+    return table;
+}
+
+std::string LCS(std::string str1, std::string str2, std::string str3){
+    std::vector<std::vector<std::vector<int> > > table = lengthLCS(str1, str2, str3);
+    std::string result = "";
+    // std::cout << "Length: " << table[str1.size()][str2.size()][str3.size()] << std::endl;
+    int i = str1.size();
+    int j = str2.size();
+    int k = str3.size();
+    int currentLength = 0;
+    while(i > 0 && j > 0 && k > 0){
+	currentLength = table[i][j][k];
+	if(str1[i - 1] == str2[j - 1] && str2[j - 1] == str3[k - 1]){
+	    result = str1[i - 1] + result;
+	    i = i - 1;
+	    j = j - 1;
+	    k = k - 1;
+	}else{
+	    if(table[i - 1][j][k] == currentLength){
+	    	i = i - 1;
+	    }else{
+	    	if(table[i][j - 1][k] == currentLength){
+	    	    j = j - 1;
+	    	}else{
+	    	    if(table[i][j][k - 1] == currentLength){
+	    		k = k - 1;
+	    	    }
+	    	}
+	    }
+	}
+    }
+    return result;
 }

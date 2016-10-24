@@ -18,6 +18,7 @@ int main(){
     std::cout << "LCS: " << result << std::endl;
     std::cout << std::endl;
     Graph graph(11);
+    //Insert cities
     graph.insertCity("Toronto");
     graph.insertCity("Buffalo");
     graph.insertCity("Rochester");
@@ -50,48 +51,24 @@ int main(){
     std::cout << "Shortest path from New York City to Toronto" << std::endl;
     graph.printShortestPath("New York City", "Toronto");
     return 0;
-    // std::vector<std::vector<int > > distances = graph.floydsAlgorithm();
-    // auto it = graph.cities.begin();
-    // while(it != graph.cities.end()){
-    // 	std::cout << *it << " ";
-    // 	++ it;
-    // }
-    // std::cout << std::endl;
-    // for(int i = 0; i < distances.size(); ++ i){
-    // 	// std::cout << graph.cities[i] << " {";
-    // 	for(int j = 0; j < distances[i].size(); ++ j){
-    // 	    // std::cout << distances[i][j] << " (" << graph.cities[j] << ") ";
-    // 	    std::cout << distances[i][j] << " ";
-    // 	}
-    // 	// std::cout << "}" << std::endl;
-    // 	std::cout << std::endl;
-	
-    // }
-    // auto it = graph.cities.begin();
-    // while(it != graph.cities.end()){
-    // 	std::cout << *it << " ";
-    // 	++ it;
-    // }
-    // std::cout << std::endl;
-    // for(int i = 0; i < graph.weights.size(); ++ i){
-    // 	std::cout << graph.cities[i] << " {";
-    // 	for(int j = 0; j < graph.weights[i].size(); ++ j){
-    // 	    std::cout << graph.weights[i][j] << " (" << graph.cities[j] << ") ";
-    // 	}
-    // 	std::cout << "}" << std::endl;
-	
-    // }
-    return 0;
 }
 
+
+/*
+  Returns the 3D table for calculating the length of the LCS
+ */
 std::vector<std::vector<std::vector<int> > > lengthLCS(std::string str1, std::string str2, std::string str3){
+    // Initialize 3D table
     std::vector<std::vector<std::vector<int> > > table(str1.size() + 1, std::vector<std::vector<int> >(str2.size() + 1, std::vector<int>(str3.size() + 1, 0)));
     for(int i = 1; i < table.size(); ++ i){
 	for(int j = 1; j < table[i].size(); ++ j){
 	    for(int k = 1; k < table[i][j].size(); ++ k){
+		// If characters at index are same, increase length of LCS by one.
 		if(str1[i - 1] == str2[j - 1] && str2[j - 1] == str3[k - 1]){
 		    table[i][j][k] = table[i - 1][j - 1][k - 1] + 1;
 		}else{
+		    //If characters are not the same, get max between not including the char from str1,
+		    //str2, and str3.
 		    int length1 = table[i - 1][j][k];
 		    int length2 = table[i][j - 1][k];
 		    int length3 = table[i][j][k - 1];
@@ -111,6 +88,7 @@ std::string LCS(std::string str1, std::string str2, std::string str3){
     int j = str2.size();
     int k = str3.size();
     int currentLength = 0;
+    //Traverse 3D table by checking when the characters are the same
     while(i > 0 && j > 0 && k > 0){
 	currentLength = table[i][j][k];
 	if(str1[i - 1] == str2[j - 1] && str2[j - 1] == str3[k - 1]){

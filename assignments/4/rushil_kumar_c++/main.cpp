@@ -16,11 +16,9 @@ int main(){
 	int endCourse = std::stoi(course) - 1;
 	while(std::getline(ss, course, ' ')){
 	    int startCourse = std::stoi(course) - 1;
-	    // matrix[endCourse][startCourse] = 1;
 	    matrix[startCourse][endCourse] = 1;
-	    // std::cout << endCourse << " " << startCourse << std::endl;
 	}
     }
     Graph graph = Graph(matrix);
-    std::cout << graph.findMinSemesters() << std::endl;
+    std::cout << "Minimum number of semesters: " << graph.findMinSemesters() << std::endl;
 }

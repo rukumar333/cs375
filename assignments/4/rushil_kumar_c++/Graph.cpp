@@ -3,17 +3,26 @@
 #include <iostream>
 
 int Graph::findMinSemesters(){
-    std::queue<std::pair<int, int> fifo = std::queue<int>();    
+    std::queue<int> fifo = std::queue<int>();
+    std::vector<int> level = std::vector<int>(15, 1);
     // int root = 0;
     int semesterCount = 0;
     colors[0] = 1;
+    colors[1] = 1;
+    colors[2] = 1;
+    // fifo.push(std::make_pair(0, 0));
+    // fifo.push(std::make_pair(1, 0));
+    // fifo.push(std::make_pair(2, 0));
     fifo.push(0);
-    // colors[0] = ;
-    // fifo.push(0);
+    fifo.push(1);
+    fifo.push(2);
     while(!fifo.empty()){
-	++ semesterCount;
+	// ++ semesterCount;
 	int currentNode = fifo.front();
-	std::cout << "Current: " << currentNode << std::endl;
+	if(semesterCount < level[currentNode]){
+	    semesterCount = level[currentNode];
+	}
+	// std::cout << "Current: " << currentNode << std::endl;
 	fifo.pop();
 	// std::cout << "Popping: " << currentNode << std::endl;
 	//Set node color to black
@@ -23,19 +32,22 @@ int Graph::findMinSemesters(){
 	for(int i = 0; i < matrix[currentNode].size(); ++ i){
 	    //Check if edge and if color of node is white
 	    // std::cout << "Checking: " << i << std::endl;
-	    if(matrix[currentNode][i] == 1 && colors[i] == 0){
-		colors[currentNode] = 1;
+	    if(matrix[currentNode][i] == 1 && (colors[i] == 0 || level[i] < level[currentNode] + 1)){
+		colors[i] = 1;
 		fifo.push(i);
-		std::cout << currentNode << " " << i << std::endl;
+		level[i] = level[currentNode] + 1;
+		// std::cout << currentNode + 1<< " " << i + 1<< std::endl;
+		// std::cout << level[currentNode] << " " << level[i] << std::endl;
+		// std::cout << std::endl;
 	    }
 	}
     }
-    std::cout << semesterCount << std::endl;
+    // std::cout << semesterCount << std::endl;
     return semesterCount;
 }
 
 Graph::Graph(std::vector<std::vector<bool> > input) : matrix(input){
-    colors = std::vector<bool>(16, 0);
+    colors = std::vector<bool>(15, 0);
 }
 
 // Graph::Graph(){

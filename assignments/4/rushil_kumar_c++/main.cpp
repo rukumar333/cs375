@@ -7,6 +7,7 @@
 double linearProgramming();
 double simplexMethod(std::vector<std::vector<double > > &matrix);
 void printMatrix(std::vector<std::vector<double > > &matrix);
+double bruteForceLinear();
 
 int main(){
     // std::cout << std::stoi("cs15") << std::endl;
@@ -25,17 +26,38 @@ int main(){
     }
     Graph graph = Graph(matrix);
     std::cout << "Minimum number of semesters: " << graph.findMinSemesters() << std::endl;
-    std::cout << "Cents: " << linearProgramming() << std::endl;
+    // std::cout << "Cents: " << linearProgramming() << std::endl;
+    std::cout << "Cents: " << bruteForceLinear() << std::endl;
 }
 
 double linearProgramming(){
     std::vector<std::vector<double > > matrix = {
-	{60, 60, 1, 0, 0, 300},
-	{12, 6, 0, 1, 0, 36},
-	{10, 30, 0, 0, 1, 90},
+	{-60, -60, -1, 0, 0, -300},
+	{-12, -6, 0, -1, 0, -36},
+	{-10, -30, 0, 0, -1, -90},
 	{-12, -15, 0, 0, 0, 0}
     };
     return simplexMethod(matrix);
+}
+
+double bruteForceLinear(){
+    double minCost = 10000000;
+    for(int i = 0; i <= 300 / 60; ++ i){
+	int xCount = i;
+	int yCount = ((300 - (i * 60)) / 60);
+	double cost = (12 * xCount) + (15 * yCount);
+	// std::cout << "Cost: " << cost << std::endl;
+	// std::cout << "X count: " << i << std::endl;
+	// std::cout << "Y count: " << << std::endl;	
+	if(minCost > cost){
+	    if((12 * xCount) + (6 * yCount) >= 36){
+		if((10 * xCount) + (30 * yCount) >= 90){
+		    minCost = cost;
+		}
+	    }
+	}
+    }
+    return minCost;
 }
 
 double extraCredit(){

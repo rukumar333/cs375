@@ -1,4 +1,4 @@
-FLAGS = -std=c++11 -g
+FLAGS = -std=c++17 -g
 
 all: main.o
 	g++ $(FLAGS) main.o Graph.o -o main.exe

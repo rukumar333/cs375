@@ -239,5 +239,5 @@ std::pair<int, int> getShortestDistanceIter(const std::vector<Point> &points){
 	    }
 	}
     }
-    return minPair;
+    return minPair;    
 }

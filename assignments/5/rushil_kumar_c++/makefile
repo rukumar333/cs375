@@ -8,3 +8,6 @@ main.o: main.cpp
 
 DisjointSet.o: DisjointSet.cpp DisjointSet.h
 	g++ $(FLAGS) -c DisjointSet.cpp
+
+clean:
+	rm main.exe *.o
